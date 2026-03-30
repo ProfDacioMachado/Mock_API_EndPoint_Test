@@ -1,0 +1,52 @@
+{
+  "7894900011517": { "nome": "Refrigerante Coca-Cola Original 2L", "preco": 9.99 },
+  "7892840813014": { "nome": "Refrigerante Guaraná Antarctica 2L", "preco": 8.99 },
+  "7892840800079": { "nome": "Refrigerante Pepsi Lata 350ml", "preco": 3.50 },
+  "7896052606948": { "nome": "Refrigerante FYS Cola 2L", "preco": 6.99 },
+
+  "7891000100103": { "nome": "Leite Integral 1L", "preco": 4.89 },
+  "7891000249017": { "nome": "Achocolatado Nescau 400g", "preco": 6.90 },
+  "7894900011609": { "nome": "Café Pilão Torrado 500g", "preco": 15.90 },
+
+  "7894900011510": { "nome": "Arroz Tipo 1 5kg", "preco": 27.90 },
+  "7894900011524": { "nome": "Feijão Carioca 1kg", "preco": 8.49 },
+  "7891910000197": { "nome": "Açúcar Refinado 1kg", "preco": 4.39 },
+  "7894904011510": { "nome": "Farinha de Trigo 1kg", "preco": 5.10 },
+
+  "7896004400912": { "nome": "Óleo de Soja 900ml", "preco": 7.29 },
+  "7891030003111": { "nome": "Molho de Tomate 340g", "preco": 2.99 },
+  "7891025301512": { "nome": "Macarrão Espaguete 500g", "preco": 3.99 },
+
+  "7891991000835": { "nome": "Biscoito Recheado Chocolate 140g", "preco": 2.99 },
+  "7891991012012": { "nome": "Chocolate ao Leite 90g", "preco": 5.49 },
+  "7896003701515": { "nome": "Água Mineral 1,5L", "preco": 2.50 },
+
+  "7891025112019": { "nome": "Sabão em Pó Omo 1kg", "preco": 13.90 },
+  "7891150065012": { "nome": "Detergente Líquido Ypê 500ml", "preco": 2.79 },
+  "7898924183017": { "nome": "Papel Higiênico 4 Rolos", "preco": 7.50 },
+
+  "7896005803019": { "nome": "Creme Dental Colgate 90g", "preco": 3.49 },
+  "7897517901013": { "nome": "Shampoo Seda 350ml", "preco": 10.90 },
+
+  "7894900701517": { "nome": "Margarina Qualy 500g", "preco": 5.99 },
+  "7891000053508": { "nome": "Leite Condensado Moça 395g", "preco": 7.80 },
+
+  "7896065800019": { "nome": "Cerveja Skol Lata 350ml", "preco": 3.29 },
+  "7891991290014": { "nome": "Cerveja Brahma Lata 350ml", "preco": 3.29 },
+
+  "7891234567895": { "nome": "Banana Prata 1kg", "preco": 4.50 },
+  "7891234567896": { "nome": "Maçã Gala 1kg", "preco": 6.90 },
+  "7891234567897": { "nome": "Batata Inglesa 1kg", "preco": 5.20 },
+
+  "7893216549871": { "nome": "Frango Congelado 1kg", "preco": 12.90 },
+  "7893216549872": { "nome": "Carne Bovina Acém 1kg", "preco": 32.90 },
+
+  "7897415200012": { "nome": "Pão de Forma 500g", "preco": 6.50 },
+  "7897415200029": { "nome": "Pão de Hambúrguer 300g", "preco": 5.99 },
+
+  "7898900000011": { "nome": "Salgadinho Presunto 80g", "preco": 3.99 },
+  "7898900000028": { "nome": "Salgadinho Queijo 80g", "preco": 3.99 },
+
+  "7895555500013": { "nome": "Sabonete Dove 90g", "preco": 3.49 },
+  "7895555500020": { "nome": "Sabonete Lux 90g", "preco": 2.99 }
+}

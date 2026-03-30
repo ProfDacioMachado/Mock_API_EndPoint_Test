@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Caixa Livre</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .topo {
+      background: #ffc107;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      padding: 10px;
+      border: 2px solid #000;
+    }
+
+    .lista {
+      height: 400px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #000;
+    }
+
+    .painel {
+      background: #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #000;
+    }
+
+    .total {
+      font-size: 28px;
+      text-align: right;
+      font-weight: bold;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+  </style>
+</head>
+
+<body class="bg-primary bg-gradient bg-opacity-45">
+<div id="Alert"> <br> </div>
+<div class="container mt-3">
+
+  <div class="topo">CAIXA LIVRE</div>
+
+  <div class="row mt-3">
+
+   
+    <div class="col-md-7">
+      <h3 class="text-white"> Sua Compra</h3>
+      <ul id="lista" class="list-group lista"></ul>
+    </div>
+
+    <div class="col-md-5">
+
+      <div class="painel total">
+        Total: R$ <span id="total">0.00</span>
+      </div>
+    
+      <div class="painel">
+        <label>Código de Barras</label>
+        <input type="text" id="codigo" class="form-control">
+      </div>
+
+      <div class="painel">
+        <label>Quantidade</label>
+        <input type="number" id="quantidade" class="form-control" value="1">
+      </div>
+
+      <div class="painel">
+        <label>Quantidade X Valor Unitário</label>
+          <div class="alert alert-light" role="alert">
+            <span id="ValXUn">0.00</span>
+          </div>
+      </div>
+
+      <button class="btn btn-success w-100" onclick="adicionarProduto()">
+        Adicionar Produto
+      </button>
+
+    </div>
+  </div>
+
+  <div class="container-fluid mt-3">
+    <div class="bg-light border p-2 d-flex justify-content-between small">
+      <div>
+        Loja: <strong id="loja">Minha Loja</strong>
+      </div>
+      <div>
+        Local: <strong id="local">Carregando...</strong>
+      </div>
+      <div>
+        Data/Hora: <strong id="dataHora"></strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-absolute-down">
+    <div class="bg-dark text-white text-center p-2 small">
+      DFMF Sistemas de Automação Ltda - 
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="script.js"></script>
+</body>
+</html>
