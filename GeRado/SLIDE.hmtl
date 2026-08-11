@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processos de Software - Aula 04</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --bg-color: #faf9f7;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: var(--secondary-color);
+            margin-top: 40px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+            background-color: #f4f6f7;
+            padding: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+        h3 {
+            color: var(--primary-color);
+            margin-top: 25px;
+        }
+        ul, ol {
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        blockquote {
+            font-style: italic;
+            border-left: 4px solid #bdc3c7;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+        }
+        .image-placeholder {
+            background-color: #ecf0f1;
+            border: 2px dashed #bdc3c7;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 20px 0;
+            color: #7f8c8d;
+            border-radius: 4px;
+        }
+        .slide-separator {
+            border-top: 1px solid #ecf0f1;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Processos de Software - Aula 04</h1>
+        <p><strong>Profª Ana Letícia Mania Feijó</strong></p>
+
+        <div class="slide-separator"></div>
+
+        <h2>Literatura recomendada</h2>
+        <ul>
+            <li>Wilson de Pádua Paula Filho</li>
+            <li>Capítulo 5</li>
+            <li>História e evolução dos processos de desenvolvimento de software</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Era Pré-Processos (décadas de 1940–1960)</h2>
+        <h3>Contexto</h3>
+        <ul>
+            <li>O foco da computação estava no hardware, não no software.</li>
+            <li>O software era visto como algo improvisado, escrito sob demanda.</li>
+            <li>Programadores escreviam código diretamente em Assembly ou linguagens rudimentares.</li>
+        </ul>
+        <h3>Características</h3>
+        <ul>
+            <li>Sem métodos formais ou padrões.</li>
+            <li>Cada projeto era uma aventura artesanal, com pouca documentação.</li>
+            <li>O conhecimento era pessoal e não compartilhado.</li>
+        </ul>
+        <h3>Exemplos:</h3>
+        <ul>
+            <li><strong>ENIAC (1945):</strong> primeiro computador eletrônico digital. Programado com painéis e switches.</li>
+            <li><strong>Grace Hopper:</strong> criou o primeiro compilador (A-0) e ajudou a desenvolver o COBOL.</li>
+        </ul>
+        <h3>Problemas:</h3>
+        <ul>
+            <li>Software difícil de manter e reutilizar.</li>
+            <li>Altamente suscetível a erros humanos.</li>
+            <li>Crescimento da complexidade sem controle.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Crise do Software (1968–1970)</h2>
+        <h3>O "ponto de ruptura"</h3>
+        <p>Os sistemas começaram a crescer, tanto em escopo quanto em complexidade, e os métodos improvisados não davam conta.</p>
+        
+        <h3>Evento marcante:</h3>
+        <ul>
+            <li>Conferência da OTAN (1968, Garmisch, Alemanha)</li>
+            <li>Termo “crise do software” é formalizado.</li>
+            <li>Foco: atrasos, estouros de orçamento, falhas catastróficas.</li>
+            <li>Surge o termo “engenharia de software”.</li>
+        </ul>
+        <h3>Exemplos:</h3>
+        <ul>
+            <li>Projetos militares e aeroespaciais com atrasos críticos.</li>
+            <li>Sistemas de defesa dos EUA com bugs que comprometiam segurança.</li>
+        </ul>
+        <h3>Frase marcante:</h3>
+        <blockquote>“Estamos tentando construir sistemas além da nossa capacidade de compreendê-los.”</blockquote>
+
+        <div class="slide-separator"></div>
+
+        <h2>Modelo Cascata (Waterfall – década de 1970)</h2>
+        <h3>Características:</h3>
+        <ul>
+            <li>Primeiro modelo formal de processo.</li>
+            <li>Proposto por Winston Royce (1970), mas ironicamente como um modelo a ser evitado sem ciclos de validação.</li>
+        </ul>
+        <h3>Fases:</h3>
+        <ol>
+            <li>Requisitos</li>
+            <li>Análise</li>
+            <li>Projeto</li>
+            <li>Implementação</li>
+            <li>Testes</li>
+            <li>Manutenção</li>
+        </ol>
+        <h3>Objetivo:</h3>
+        <p>Trazer ordem, documentação e controle para o caos.</p>
+        <h3>Pontos fortes:</h3>
+        <ul>
+            <li>Clareza de etapas.</li>
+            <li>Facilita gerenciamento.</li>
+            <li>Boa rastreabilidade e controle.</li>
+        </ul>
+        <h3>Problemas:</h3>
+        <ul>
+            <li>Pouca flexibilidade.</li>
+            <li>Testes só no final.</li>
+            <li>Mudanças de requisitos são difíceis de incorporar.</li>
+        </ul>
+        <h3>Exemplo real:</h3>
+        <p>NASA – Projeto Apollo: software altamente controlado e documentado, usado com sucesso, mas com enorme custo e tempo.</p>
+
+        <div class="slide-separator"></div>
+
+        <h2>Modelos Iterativos e Incrementais (1980–1990)</h2>
+        <p><em>Reação à rigidez do Cascata</em></p>
+        <h3>Modelo Espiral (Barry Boehm, 1986)</h3>
+        <ul>
+            <li>Foco em riscos</li>
+            <li>Cada ciclo inclui: definição, análise de risco, construção e avaliação.</li>
+        </ul>
+        <h3>RUP – Rational Unified Process (IBM)</h3>
+        <ul>
+            <li>Baseado em iterações</li>
+            <li>Ciclo de vida dividido em fases:
+                <ul>
+                    <li>Iniciação</li>
+                    <li>Elaboração</li>
+                    <li>Construção</li>
+                    <li>Transição</li>
+                </ul>
+            </li>
+            <li>Integra práticas de engenharia orientada a objetos e UML.</li>
+        </ul>
+        <h3>Benefícios:</h3>
+        <ul>
+            <li>Feedback precoce.</li>
+            <li>Flexível a mudanças.</li>
+            <li>Enfatiza qualidade de software e arquitetura.</li>
+        </ul>
+        <h3>Desvantagens:</h3>
+        <ul>
+            <li>Complexidade alta.</li>
+            <li>Custo e tempo ainda significativos.</li>
+            <li>Requer alto nível de capacitação.</li>
+        </ul>
+        <h3>Exemplo:</h3>
+        <p>Grandes sistemas bancários, ERP, telecomunicações.</p>
+
+        <div class="slide-separator"></div>
+
+        <h2>Manifesto Ágil (2001 – ponto de virada)</h2>
+        <h3>Evento histórico:</h3>
+        <ul>
+            <li>17 especialistas reúnem-se em Snowbird, Utah.</li>
+            <li>Rejeitam burocracia excessiva dos métodos anteriores.</li>
+            <li>Criam os 4 valores e 12 princípios do Manifesto Ágil.</li>
+        </ul>
+        <h3>Métodos populares:</h3>
+        <p>Scrum, Extreme Programming (XP), Kanban</p>
+        <h3>Benefícios:</h3>
+        <ul>
+            <li>Entregas rápidas e frequentes.</li>
+            <li>Flexibilidade às mudanças.</li>
+            <li>Cultura colaborativa e foco no cliente.</li>
+        </ul>
+        <h3>Desafios:</h3>
+        <ul>
+            <li>Pode gerar desorganização disfarçada de agilidade.</li>
+            <li>Exige disciplina e times maduros.</li>
+        </ul>
+        <h3>Exemplos reais:</h3>
+        <ul>
+            <li><strong>Spotify:</strong> modelo de Squads, Tribes, Guilds.</li>
+            <li><strong>Google e Facebook:</strong> deploys frequentes, foco em inovação.</li>
+            <li><strong>Startups brasileiras:</strong> QuintoAndar, iFood, Nubank.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Processos Contemporâneos (2010+)</h2>
+        <p><em>Integração e escalabilidade</em></p>
+        <h3>DevOps:</h3>
+        <ul>
+            <li>Integra desenvolvimento + operações.</li>
+            <li>Foco em automação, entregas contínuas, resiliência.</li>
+        </ul>
+        <h3>CI/CD:</h3>
+        <ul>
+            <li>Continuous Integration / Continuous Delivery.</li>
+            <li>Pipeline automatizado de testes, builds, deploy.</li>
+        </ul>
+        <h3>SAFe – Scaled Agile Framework:</h3>
+        <p>Escala os princípios ágeis para grandes organizações.</p>
+        <h3>Lean Software Development:</h3>
+        <ul>
+            <li>Baseado no Toyota Production System.</li>
+            <li>Elimina desperdícios, foca em valor contínuo.</li>
+        </ul>
+        <h3>Exemplos:</h3>
+        <ul>
+            <li><strong>Amazon:</strong> centenas de deploys por dia.</li>
+            <li><strong>Netflix:</strong> testes em produção, microsserviços.</li>
+            <li><strong>Nubank:</strong> squads ágeis com arquitetura moderna.</li>
+            <li><strong>Natura:</strong> Implementou Design Thinking para desenvolver novos produtos e serviços, focando nas necessidades dos clientes e buscando soluções inovadoras.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Os processos de Humphrey</h2>
+        <ul>
+            <li>Quando os modelos de avaliações de maturidade surgiram poucas empresas tinham boa classificação.</li>
+            <li>Para melhorar este cenário Watts Humphrey propôs o processo de uso individual (Processo Pessoal de Software – PSP) que posteriormente evoluiu para o processo de Software para times – TSP.</li>
+            <li>O PSP foi descrito em um livro do Humphrey focado no aprendizado. Nele o PSP é representado por uma sequencia de processos pessoais, que são aprendidos através de uma sequencia de pequenos projetos. Os projetos devem ser executados seguindo rigorosamente os processos, que incluem um conjunto de formulários, scripts e relatórios predefinidos. Os projetos são individuais, com duração de cerca de 10 horas.</li>
+            <li>O TSP trata algumas áreas do CMMI nível 2 que não são tratadas no PSP por serem consideradas muito simples no caso de projetos individuais, como: gestão dos requisitos, planejamento e controle de projeto, garantia da qualidade e gestão de configurações.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Tabela de processos do Processo Pessoal de Software – PSP</h2>
+        <div class="image-placeholder">
+            [Espaço para Imagem/Tabela: Tabela de processos do Processo Pessoal de Software – PSP]
+        </div>
+
+        <div class="slide-separator"></div>
+
+        <h2>Processo de Software para times – TSP</h2>
+        <ul>
+            <li>Publicado no livro de Humphrey para utilização educacional.</li>
+            <li>Ao longo de 15 semanas são executados três ciclos de desenvolvimento de um produto.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Processo de Software para times – TSP</h2>
+        <p><em>(Repetição/Continuação)</em></p>
+        <ul>
+            <li>Publicado no livro de Humphrey para utilização educacional.</li>
+            <li>Ao longo de 15 semanas são executados três ciclos de desenvolvimento de um produto.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Processos da linhagem MBASE</h2>
+        <p>Combina ciclo de vida espiral com os princípios de negociação ganha-ganha e com o conceito de evitar choques entre modelos. Os modelos considerados nessa questão são:</p>
+        <ul>
+            <li>Modelos de produto</li>
+            <li>Modelos de processo</li>
+            <li>Modelos de prioridade</li>
+            <li>Modelos de sucesso</li>
+        </ul>
+        <p>Este modelo é adotado pelo Processo Unificado, pelo RUP e pelo processo Praxis.</p>
+
+        <div class="slide-separator"></div>
+
+        <h2>O Processo Praxis</h2>
+        <ul>
+            <li>Da suporte a projetos didáticos.</li>
+            <li>Significa Processo para Aplicativos Extensíveis Interativos.</li>
+            <li>Suporta projetos realizados por pequenas equipes, com duração de seis meses a um ano.</li>
+            <li>Baseado em orientação a objetos.</li>
+            <li>Suas disciplinas cobrem as práticas descritas no CMMI.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Conceitos Genéricos EPF</h2>
+        <ul>
+            <li>Linguagem para descrição de processos de software.</li>
+            <li>Abrange representações que permitem explicar o funcionamento de diversas variáveis de processos como: Papéis, Produtos de trabalho, Tarefas, Orientações, etc.</li>
+        </ul>
+
+        <div class="slide-separator"></div>
+
+        <h2>Conceitos Genéricos EPF</h2>
+        <div class="image-placeholder">
+            [Espaço para Gráfico/Imagem Adicional: Conceitos Genéricos EPF]
+        </div>
+
+        <div class="slide-separator"></div>
+
+        <h2>Próxima aula</h2>
+        <p>Modelos evolutivos do processo de software (incremental, espiral, cascata)</p>
+
+    </div>
+</body>
+</html>
