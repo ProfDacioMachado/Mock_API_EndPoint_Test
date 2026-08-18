@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagrama — Product Line Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  :root{
+    --bg:#0a1220;
+    --bg-2:#0d1830;
+    --grid:#172743;
+    --panel:#0e1a30;
+    --panel-border:#1f3454;
+    --ink:#dbe6f5;
+    --ink-dim:#7e93b3;
+    --cyan:#4fd8e0;
+    --amber:#f2b544;
+    --violet:#b98af0;
+    --rose:#f0708a;
+    --line:#5c85b8;
+    --glow: 0 0 8px rgba(79,216,224,.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);overflow:hidden;font-family:'IBM Plex Sans',sans-serif;color:var(--ink);}
+  #app{position:relative;width:100vw;height:100vh;}
+
+  svg{width:100%;height:100%;display:block;cursor:grab;}
+  svg.panning{cursor:grabbing;}
+
+  /* ---- Header / title block ---- */
+  #topbar{
+    position:absolute;top:0;left:0;right:0;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 22px;
+    pointer-events:none;
+    z-index:5;
+  }
+  #titleblock{pointer-events:auto;}
+  #titleblock .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;
+    color:var(--cyan);text-transform:uppercase;margin-bottom:4px;
+  }
+  #titleblock h1{
+    margin:0;font-size:20px;font-weight:600;letter-spacing:.01em;color:var(--ink);
+  }
+  #titleblock .sub{font-size:12px;color:var(--ink-dim);margin-top:3px;font-family:'IBM Plex Mono',monospace;}
+
+  #searchbox{pointer-events:auto;position:relative;}
+  #searchbox input{
+    background:var(--panel);border:1px solid var(--panel-border);color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+    padding:9px 12px 9px 32px;border-radius:3px;width:230px;outline:none;
+  }
+  #searchbox input::placeholder{color:var(--ink-dim);}
+  #searchbox input:focus{border-color:var(--cyan);box-shadow:var(--glow);}
+  #searchbox svg.icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-dim);pointer-events:none;}
+
+  /* ---- Legend (blueprint title block, bottom-left) ---- */
+  #legend{
+    position:absolute;left:18px;bottom:18px;z-index:5;
+    background:var(--panel);border:1px solid var(--panel-border);border-radius:4px;
+    padding:12px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;
+    color:var(--ink-dim);width:238px;
+  }
+  #legend h2{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin:0 0 8px;font-weight:600;}
+  #legend .grp{margin-bottom:10px;}
+  #legend .grp:last-child{margin-bottom:0;}
+  #legend .row{display:flex;align-items:center;gap:8px;margin:4px 0;}
+  #legend .row span.lbl{color:var(--ink);font-size:11px;}
+  #legend svg{flex:0 0 auto;}
+
+  /* ---- Stats title-block strip (bottom-right, like a drawing stamp) ---- */
+  #stamp{
+    position:absolute;right:18px;bottom:18px;z-index:5;
+    background:var(--panel);border:1px solid var(--panel-border);border-radius:4px;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-dim);
+    display:grid;grid-template-columns:auto auto;
+  }
+  #stamp div{padding:7px 12px;border-bottom:1px solid var(--panel-border);border-right:1px solid var(--panel-border);}
+  #stamp div:nth-child(2n){border-right:none;}
+  #stamp div:nth-last-child(-n+2){border-bottom:none;}
+  #stamp .k{color:var(--ink-dim);}
+  #stamp .v{color:var(--cyan);text-align:right;font-weight:600;}
+
+  /* ---- Inspector panel (right) ---- */
+  #inspector{
+    position:absolute;top:80px;right:18px;bottom:18px;width:290px;z-index:6;
+    background:var(--panel);border:1px solid var(--panel-border);border-radius:4px;
+    display:flex;flex-direction:column;overflow:hidden;
+    transform:translateX(320px);transition:transform .25s ease;
+  }
+  #inspector.open{transform:translateX(0);}
+  #inspector .head{
+    padding:14px 16px;border-bottom:1px solid var(--panel-border);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  #inspector .head .type-pill{
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 7px;border-radius:2px;border:1px solid var(--panel-border);
+  }
+  #inspector .head h3{margin:8px 0 0;font-size:16px;font-weight:600;}
+  #inspector .close{cursor:pointer;color:var(--ink-dim);font-size:18px;line-height:1;background:none;border:none;padding:2px;}
+  #inspector .close:hover{color:var(--ink);}
+  #inspector .body{padding:14px 16px;overflow-y:auto;font-size:12.5px;}
+  #inspector .section-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin:14px 0 6px;}
+  #inspector .section-lbl:first-child{margin-top:0;}
+  #inspector ul{margin:0;padding-left:16px;color:var(--ink);}
+  #inspector li{margin:3px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+  #inspector .rel-row{padding:7px 0;border-bottom:1px dashed var(--panel-border);}
+  #inspector .rel-row:last-child{border-bottom:none;}
+  #inspector .rel-row .rt{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--amber);letter-spacing:.06em;}
+  #inspector .rel-row .rn{color:var(--ink);font-size:12.5px;margin-top:2px;}
+  #inspector .rel-row .rn b{color:var(--cyan);cursor:pointer;}
+
+  /* ---- Zoom controls ---- */
+  #zoomctrl{position:absolute;left:18px;top:80px;z-index:5;display:flex;flex-direction:column;gap:1px;}
+  #zoomctrl button{
+    width:30px;height:30px;background:var(--panel);border:1px solid var(--panel-border);color:var(--ink);
+    font-size:15px;cursor:pointer;font-family:'IBM Plex Mono',monospace;
+  }
+  #zoomctrl button:first-child{border-radius:4px 4px 0 0;}
+  #zoomctrl button:last-child{border-radius:0 0 4px 4px;}
+  #zoomctrl button:hover{background:#132342;color:var(--cyan);}
+
+  /* ---- Node / edge SVG styles ---- */
+  .node{cursor:pointer;}
+  .node .plate{filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));}
+  .node text{font-family:'IBM Plex Mono',monospace;fill:var(--ink);}
+  .node .hdr-label{font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:12.5px;}
+  .node .stereo{font-size:9.5px;letter-spacing:.05em;}
+  .node .attr{font-size:10.5px;fill:var(--ink-dim);}
+  .node.dim{opacity:.15;}
+  .node.hl .plate{filter:drop-shadow(0 0 10px rgba(79,216,224,.65));}
+
+  .edge-path{fill:none;stroke:var(--line);stroke-width:1.4;}
+  .edge-path.dep{stroke-dasharray:4,3;}
+  .edge.dim{opacity:.08;}
+  .edge.hl .edge-path{stroke:var(--cyan);stroke-width:2;}
+  .edge-label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;fill:var(--ink-dim);}
+  .edge-label-bg{fill:var(--bg-2);}
+  .mult{font-family:'IBM Plex Mono',monospace;font-size:9px;fill:var(--ink-dim);}
+
+  #hint{
+    position:absolute;left:50%;top:16px;transform:translateX(-50%);
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-dim);
+    background:var(--panel);border:1px solid var(--panel-border);padding:5px 12px;border-radius:3px;
+    opacity:.9;pointer-events:none;z-index:5;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <svg id="canvas">
+    <defs>
+      <pattern id="gridPattern" width="26" height="26" patternUnits="userSpaceOnUse">
+        <path d="M 26 0 L 0 0 0 26" fill="none" stroke="var(--grid)" stroke-width="1"/>
+      </pattern>
+      <pattern id="gridPatternMajor" width="130" height="130" patternUnits="userSpaceOnUse">
+        <rect width="130" height="130" fill="url(#gridPattern)"/>
+        <path d="M 130 0 L 0 0 0 130" fill="none" stroke="#1c3357" stroke-width="1.1"/>
+      </pattern>
+
+      <marker id="arrow-open" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" orient="auto-start-reverse">
+        <path d="M1,1 L10,6 L1,11" fill="none" stroke="#5c85b8" stroke-width="1.6"/>
+      </marker>
+      <marker id="arrow-open-hl" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" orient="auto-start-reverse">
+        <path d="M1,1 L10,6 L1,11" fill="none" stroke="#4fd8e0" stroke-width="1.8"/>
+      </marker>
+
+      <marker id="tri-hollow" viewBox="0 0 16 12" refX="14.5" refY="6" markerWidth="15" markerHeight="12" orient="auto-start-reverse">
+        <path d="M1,1 L14.5,6 L1,11 Z" fill="#0a1220" stroke="#5c85b8" stroke-width="1.4"/>
+      </marker>
+      <marker id="tri-hollow-hl" viewBox="0 0 16 12" refX="14.5" refY="6" markerWidth="15" markerHeight="12" orient="auto-start-reverse">
+        <path d="M1,1 L14.5,6 L1,11 Z" fill="#0a1220" stroke="#4fd8e0" stroke-width="1.6"/>
+      </marker>
+
+      <marker id="diamond-hollow" viewBox="0 0 18 12" refX="1.5" refY="6" markerWidth="17" markerHeight="12" orient="auto-start-reverse">
+        <path d="M1,6 L9,1 L17,6 L9,11 Z" fill="#0a1220" stroke="#5c85b8" stroke-width="1.4"/>
+      </marker>
+      <marker id="diamond-hollow-hl" viewBox="0 0 18 12" refX="1.5" refY="6" markerWidth="17" markerHeight="12" orient="auto-start-reverse">
+        <path d="M1,6 L9,1 L17,6 L9,11 Z" fill="#0a1220" stroke="#4fd8e0" stroke-width="1.6"/>
+      </marker>
+
+      <marker id="diamond-filled" viewBox="0 0 18 12" refX="1.5" refY="6" markerWidth="17" markerHeight="12" orient="auto-start-reverse">
+        <path d="M1,6 L9,1 L17,6 L9,11 Z" fill="#f2b544" stroke="#f2b544" stroke-width="1"/>
+      </marker>
+      <marker id="diamond-filled-hl" viewBox="0 0 18 12" refX="1.5" refY="6" markerWidth="17" markerHeight="12" orient="auto-start-reverse">
+        <path d="M1,6 L9,1 L17,6 L9,11 Z" fill="#4fd8e0" stroke="#4fd8e0" stroke-width="1"/>
+      </marker>
+    </defs>
+    <rect id="bgrect" width="100%" height="100%" fill="url(#gridPatternMajor)"/>
+    <g id="zoomLayer">
+      <g id="edgeLayer"></g>
+      <g id="nodeLayer"></g>
+    </g>
+  </svg>
+
+  <div id="hint">arraste os nós · role para zoom · clique para inspecionar</div>
+
+  <div id="topbar">
+    <div id="titleblock">
+      <div class="eyebrow">Feature-Oriented Metamodel</div>
+      <h1>Product Line Architecture</h1>
+      <div class="sub">variability &amp; variation-point structure — diagrama gerado a partir de JSON</div>
+    </div>
+    <div id="searchbox">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="searchInput" type="text" placeholder="buscar entidade…">
+    </div>
+  </div>
+
+  <div id="zoomctrl">
+    <button id="zoomIn">+</button>
+    <button id="zoomReset">▢</button>
+    <button id="zoomOut">–</button>
+  </div>
+
+  <div id="legend">
+    <h2>Legenda</h2>
+    <div class="grp">
+      <div class="row"><svg width="16" height="10"><rect x="0" y="1" width="16" height="8" rx="1" fill="none" stroke="#4fd8e0" stroke-width="1.4"/></svg><span class="lbl">Class</span></div>
+      <div class="row"><svg width="16" height="10"><rect x="0" y="1" width="16" height="8" rx="1" fill="none" stroke="#4fd8e0" stroke-width="1.4" stroke-dasharray="2.5,2"/></svg><span class="lbl">Abstract Class</span></div>
+      <div class="row"><svg width="16" height="10"><rect x="0" y="1" width="16" height="8" rx="1" fill="none" stroke="#f2b544" stroke-width="1.4"/></svg><span class="lbl">Enumeration</span></div>
+      <div class="row"><svg width="16" height="10"><rect x="0" y="1" width="16" height="8" rx="4" fill="none" stroke="#f2b544" stroke-width="1.2"/></svg><span class="lbl">Enumeration Literal</span></div>
+      <div class="row"><svg width="16" height="10"><rect x="0" y="1" width="16" height="8" rx="4" fill="none" stroke="#b98af0" stroke-width="1.2" stroke-dasharray="2,1.6"/></svg><span class="lbl">Stereotype</span></div>
+    </div>
+    <div class="grp">
+      <div class="row"><svg width="30" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#5c85b8" stroke-width="1.4"/><path d="M24,5 L30,1.5 L30,8.5 Z" fill="#0a1220" stroke="#5c85b8" stroke-width="1"/></svg><span class="lbl">Generalization</span></div>
+      <div class="row"><svg width="30" height="10"><line x1="6" y1="5" x2="30" y2="5" stroke="#5c85b8" stroke-width="1.4"/><path d="M6,5 L0,1.5 L0,8.5 Z" fill="#0a1220" stroke="#5c85b8" stroke-width="1"/></svg><span class="lbl">Aggregation</span></div>
+      <div class="row"><svg width="30" height="10"><line x1="6" y1="5" x2="30" y2="5" stroke="#5c85b8" stroke-width="1.4"/><path d="M6,5 L0,1.5 L0,8.5 Z" fill="#f2b544" stroke="#f2b544" stroke-width="1"/></svg><span class="lbl">Composition</span></div>
+      <div class="row"><svg width="30" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#5c85b8" stroke-width="1.4"/><path d="M24,1.5 L30,5 L24,8.5" fill="none" stroke="#5c85b8" stroke-width="1.4"/></svg><span class="lbl">Association</span></div>
+      <div class="row"><svg width="30" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#5c85b8" stroke-width="1.4" stroke-dasharray="3,2.2"/><path d="M24,1.5 L30,5 L24,8.5" fill="none" stroke="#5c85b8" stroke-width="1.4"/></svg><span class="lbl">Dependency</span></div>
+    </div>
+  </div>
+
+  <div id="stamp"></div>
+
+  <div id="inspector">
+    <div class="head">
+      <div>
+        <span id="insType" class="type-pill"></span>
+        <h3 id="insTitle"></h3>
+      </div>
+      <button class="close" id="insClose">✕</button>
+    </div>
+    <div class="body" id="insBody"></div>
+  </div>
+</div>
+
+<script>
+/* ============================== DATA ============================== */
+const graphData = {
+  "Nodes": [
+    { "id": "PLA", "label": "Product Line Architecture", "type": "Class" },
+    { "id": "ArchStyle", "label": "Architectural Style or Pattern", "type": "Class" },
+    { "id": "VariationPoint", "label": "Variation Point", "type": "Class" },
+    { "id": "Variability", "label": "Variability", "type": "Class" },
+    { "id": "Variants", "label": "Variants", "type": "Class" },
+    { "id": "Feature", "label": "Feature", "type": "Stereotype" },
+    { "id": "Element", "label": "Element", "type": "Abstract Class", "attributes": ["type: ElementType", "feature: Feature"] },
+    { "id": "ElementType", "label": "ElementType", "type": "Enumeration" },
+    { "id": "VarLiteral", "label": "Variable", "type": "EnumerationLiteral" },
+    { "id": "ComLiteral", "label": "Common", "type": "EnumerationLiteral" },
+    { "id": "Component", "label": "Component", "type": "Class" },
+    { "id": "Interface", "label": "Interface", "type": "Class" },
+    { "id": "Class", "label": "Class", "type": "Class" }
+  ],
+  "Edges": [
+    { "source": "PLA", "target": "ArchStyle", "relationship_type": "DEPENDENCY", "label": "<<conforms to>>" },
+    { "source": "PLA", "target": "Element", "relationship_type": "AGGREGATION", "target_multiplicity": "*" },
+    { "source": "VariationPoint", "target": "Variability", "relationship_type": "ASSOCIATION", "source_multiplicity": "1..*", "target_multiplicity": "1" },
+    { "source": "VariationPoint", "target": "Variants", "relationship_type": "ASSOCIATION", "source_multiplicity": "1..*", "target_multiplicity": "1..*" },
+    { "source": "Variability", "target": "Variants", "relationship_type": "AGGREGATION", "source_multiplicity": "1", "target_multiplicity": "1..*" },
+    { "source": "Variability", "target": "Element", "relationship_type": "ASSOCIATION", "source_multiplicity": "0..*", "target_multiplicity": "1..*", "label": "{type == variable}" },
+    { "source": "Feature", "target": "Element", "relationship_type": "ASSOCIATION", "source_multiplicity": "1..*", "target_multiplicity": "1..*", "label": "feature" },
+    { "source": "Element", "target": "ElementType", "relationship_type": "ASSOCIATION", "source_multiplicity": "*", "target_multiplicity": "1", "label": "type" },
+    { "source": "ElementType", "target": "VarLiteral", "relationship_type": "COMPOSITION" },
+    { "source": "ElementType", "target": "ComLiteral", "relationship_type": "COMPOSITION" },
+    { "source": "Component", "target": "Element", "relationship_type": "GENERALIZATION" },
+    { "source": "Interface", "target": "Element", "relationship_type": "GENERALIZATION" },
+    { "source": "Component", "target": "Class", "relationship_type": "AGGREGATION" },
+    { "source": "Component", "target": "Interface", "relationship_type": "AGGREGATION", "target_multiplicity": "1..*" }
+  ]
+};
+
+/* ============================== SETUP ============================== */
+const svg = d3.select('#canvas');
+const zoomLayer = d3.select('#zoomLayer');
+const edgeLayer = d3.select('#edgeLayer');
+const nodeLayer = d3.select('#nodeLayer');
+
+const typeColor = {
+  "Class": "#4fd8e0",
+  "Abstract Class": "#4fd8e0",
+  "Enumeration": "#f2b544",
+  "EnumerationLiteral": "#f2b544",
+  "Stereotype": "#b98af0"
+};
+
+function measureTextWidth(text, fontSize, bold){
+  // rough monospace/sans estimate
+  const factor = bold ? 7.1 : 6.4;
+  return text.length * (fontSize/12) * factor;
+}
+
+const CHARW = 6.6, PAD = 16, LINEH = 17, HDRH = 34;
+
+const nodes = graphData.Nodes.map(n => {
+  const attrs = n.attributes || [];
+  const isLiteral = n.type === "EnumerationLiteral";
+  const isStereo = n.type === "Stereotype";
+  let width, height;
+  if(isLiteral || isStereo){
+    width = Math.max(90, measureTextWidth(n.label, 12, true) + PAD*2 + (isStereo?10:0));
+    height = 30;
+  } else {
+    const allLines = [n.label, ...attrs, (n.type==="Abstract Class"?"«abstract»": n.type==="Enumeration"?"«enumeration»":"")];
+    const widest = allLines.reduce((m,l)=>Math.max(m, measureTextWidth(l||"", 12, false)), 0);
+    width = Math.max(150, widest + PAD*2);
+    height = HDRH + (attrs.length ? (8 + attrs.length*LINEH + 6) : 8);
+  }
+  return Object.assign({}, n, {width, height});
+});
+
+const nodeById = new Map(nodes.map(n=>[n.id, n]));
+const links = graphData.Edges.map((e,i) => Object.assign({}, e, {
+  id: 'e'+i,
+  source: e.source,
+  target: e.target
+}));
+
+/* ============================== FORCE SIM ============================== */
+const W = window.innerWidth, H = window.innerHeight;
+const simulation = d3.forceSimulation(nodes)
+  .force('link', d3.forceLink(links).id(d=>d.id).distance(170).strength(0.35))
+  .force('charge', d3.forceManyBody().strength(-900))
+  .force('collide', d3.forceCollide().radius(d => Math.max(d.width, d.height)/1.5 + 26))
+  .force('center', d3.forceCenter(W/2, H/2))
+  .force('x', d3.forceX(W/2).strength(0.03))
+  .force('y', d3.forceY(H/2).strength(0.03));
+
+/* ============================== EDGES ============================== */
+const REL_STYLE = {
+  AGGREGATION:   {dash:false, markerStart:'diamond-hollow', markerEnd:null},
+  COMPOSITION:   {dash:false, markerStart:'diamond-filled', markerEnd:null},
+  GENERALIZATION:{dash:false, markerStart:null, markerEnd:'tri-hollow'},
+  ASSOCIATION:   {dash:false, markerStart:null, markerEnd:'arrow-open'},
+  DEPENDENCY:    {dash:true,  markerStart:null, markerEnd:'arrow-open'}
+};
+
+const edgeG = edgeLayer.selectAll('g.edge').data(links).join('g')
+  .attr('class', d => 'edge ' + (REL_STYLE[d.relationship_type]?.dash ? '' : ''))
+  .attr('data-id', d=>d.id);
+
+const edgePath = edgeG.append('path')
+  .attr('class', d => 'edge-path' + (REL_STYLE[d.relationship_type]?.dash ? ' dep' : ''))
+  .attr('marker-start', d => {
+    const s = REL_STYLE[d.relationship_type];
+    return s && s.markerStart ? `url(#${s.markerStart})` : null;
+  })
+  .attr('marker-end', d => {
+    const s = REL_STYLE[d.relationship_type];
+    return s && s.markerEnd ? `url(#${s.markerEnd})` : null;
+  });
+
+// edge label (relationship label text, e.g. <<conforms to>>, feature, type, {type==variable})
+const edgeLabelG = edgeG.filter(d=>d.label).append('g').attr('class','edge-label-g');
+edgeLabelG.append('rect').attr('class','edge-label-bg');
+edgeLabelG.append('text').attr('class','edge-label').text(d=>d.label).attr('text-anchor','middle');
+
+// multiplicities
+const srcMultText = edgeG.filter(d=>d.source_multiplicity).append('text').attr('class','mult').text(d=>d.source_multiplicity);
+const tgtMultText = edgeG.filter(d=>d.target_multiplicity).append('text').attr('class','mult').text(d=>d.target_multiplicity);
+
+/* ============================== NODES ============================== */
+const nodeG = nodeLayer.selectAll('g.node').data(nodes, d=>d.id).join('g')
+  .attr('class', 'node')
+  .attr('data-id', d=>d.id)
+  .call(d3.drag()
+    .on('start', (event,d)=>{ if(!event.active) simulation.alphaTarget(0.25).restart(); d.fx=d.x; d.fy=d.y; })
+    .on('drag', (event,d)=>{ d.fx=event.x; d.fy=event.y; })
+    .on('end', (event,d)=>{ if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+  )
+  .on('click', (event,d)=>{ event.stopPropagation(); selectNode(d); });
+
+nodeG.each(function(d){
+  const g = d3.select(this);
+  const w = d.width, h = d.height;
+  const color = typeColor[d.type] || '#5c85b8';
+
+  if(d.type === 'EnumerationLiteral'){
+    g.append('rect').attr('class','plate')
+      .attr('x',-w/2).attr('y',-h/2).attr('width',w).attr('height',h)
+      .attr('rx', h/2).attr('fill','#0e1a30').attr('stroke',color).attr('stroke-width',1.3);
+    g.append('text').attr('class','hdr-label').attr('x',0).attr('y',4).attr('text-anchor','middle').text(d.label);
+    return;
+  }
+  if(d.type === 'Stereotype'){
+    g.append('rect').attr('class','plate')
+      .attr('x',-w/2).attr('y',-h/2).attr('width',w).attr('height',h)
+      .attr('rx', h/2).attr('fill','#0e1a30').attr('stroke',color).attr('stroke-width',1.3)
+      .attr('stroke-dasharray','3,2');
+    g.append('text').attr('class','hdr-label').attr('x',0).attr('y',4).attr('text-anchor','middle')
+      .attr('fill', color).text('«'+d.label+'»');
+    return;
+  }
+
+  // Class / Abstract Class / Enumeration -> UML compartment box
+  const isAbstract = d.type === 'Abstract Class';
+  const isEnum = d.type === 'Enumeration';
+  const attrs = d.attributes || [];
+
+  g.append('rect').attr('class','plate')
+    .attr('x',-w/2).attr('y',-h/2).attr('width',w).attr('height',h)
+    .attr('rx',3).attr('fill','#0e1a30').attr('stroke',color).attr('stroke-width',1.4)
+    .attr('stroke-dasharray', isAbstract ? '4,2.4' : null);
+
+  let cursorY = -h/2 + 13;
+  if(isAbstract || isEnum){
+    g.append('text').attr('class','stereo').attr('x',0).attr('y',cursorY).attr('text-anchor','middle')
+      .attr('fill', color).text(isAbstract ? '«abstract»' : '«enumeration»');
+    cursorY += 14;
+  }
+  g.append('text').attr('class','hdr-label').attr('x',0).attr('y',cursorY+3).attr('text-anchor','middle')
+    .attr('font-style', isAbstract ? 'italic' : null)
+    .text(d.label);
+
+  if(attrs.length){
+    const dividerY = -h/2 + HDRH - 10 + (isAbstract||isEnum ? 14:0);
+    g.append('line').attr('x1',-w/2).attr('x2',w/2).attr('y1',dividerY).attr('y2',dividerY)
+      .attr('stroke', color).attr('stroke-opacity',0.35);
+    attrs.forEach((a,i)=>{
+      g.append('text').attr('class','attr')
+        .attr('x', -w/2 + 10).attr('y', dividerY + 15 + i*LINEH)
+        .attr('text-anchor','start').text('• '+a);
+    });
+  }
+});
+
+/* ============================== TICK / GEOMETRY ============================== */
+function rectIntersection(cx, cy, w, h, tx, ty){
+  const dx = tx - cx, dy = ty - cy;
+  if(dx===0 && dy===0) return [cx,cy];
+  const hw = w/2, hh = h/2;
+  const scaleX = dx !== 0 ? hw / Math.abs(dx) : Infinity;
+  const scaleY = dy !== 0 ? hh / Math.abs(dy) : Infinity;
+  const scale = Math.min(scaleX, scaleY);
+  return [cx + dx*scale, cy + dy*scale];
+}
+
+simulation.on('tick', () => {
+  edgePath.attr('d', d => {
+    const s = d.source, t = d.target;
+    const [sx,sy] = rectIntersection(s.x, s.y, s.width, s.height, t.x, t.y);
+    const [tx,ty] = rectIntersection(t.x, t.y, t.width, t.height, s.x, s.y);
+    d._sx=sx; d._sy=sy; d._tx=tx; d._ty=ty;
+    return `M${sx},${sy} L${tx},${ty}`;
+  });
+
+  edgeLabelG.each(function(d){
+    const g = d3.select(this);
+    const mx = (d._sx + d._tx)/2, my = (d._sy + d._ty)/2;
+    const txt = g.select('text').attr('x', mx).attr('y', my);
+    const bbox = txt.node().getBBox();
+    g.select('rect').attr('x', bbox.x-4).attr('y', bbox.y-2).attr('width', bbox.width+8).attr('height', bbox.height+4);
+  });
+
+  srcMultText.attr('x', d => d._sx + (d._tx-d._sx)*0.14 ).attr('y', d => d._sy + (d._ty-d._sy)*0.14 - 6);
+  tgtMultText.attr('x', d => d._tx + (d._sx-d._tx)*0.14 ).attr('y', d => d._ty + (d._sy-d._ty)*0.14 - 6);
+
+  nodeG.attr('transform', d => `translate(${d.x},${d.y})`);
+});
+
+/* ============================== ZOOM / PAN ============================== */
+const zoom = d3.zoom().scaleExtent([0.25, 2.5]).on('zoom', (event)=>{
+  zoomLayer.attr('transform', event.transform);
+  d3.select('#bgrect').attr('transform', event.transform);
+});
+svg.call(zoom).on('dblclick.zoom', null);
+svg.on('mousedown', ()=>svg.classed('panning',true)).on('mouseup', ()=>svg.classed('panning',false));
+svg.on('click', ()=>{ closeInspector(); clearHighlight(); });
+
+d3.select('#zoomIn').on('click', ()=> svg.transition().duration(200).call(zoom.scaleBy, 1.3));
+d3.select('#zoomOut').on('click', ()=> svg.transition().duration(200).call(zoom.scaleBy, 0.75));
+d3.select('#zoomReset').on('click', ()=> svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity));
+
+/* ============================== HIGHLIGHT / INSPECT ============================== */
+function clearHighlight(){
+  nodeG.classed('dim', false).classed('hl', false);
+  edgeG.classed('dim', false).classed('hl', false);
+  edgePath.attr('marker-start', d=>{
+    const s = REL_STYLE[d.relationship_type];
+    return s && s.markerStart ? `url(#${s.markerStart})` : null;
+  }).attr('marker-end', d=>{
+    const s = REL_STYLE[d.relationship_type];
+    return s && s.markerEnd ? `url(#${s.markerEnd})` : null;
+  });
+}
+
+function selectNode(d){
+  const connectedIds = new Set([d.id]);
+  const connectedEdgeIds = new Set();
+  links.forEach(l=>{
+    const sid = l.source.id||l.source, tid = l.target.id||l.target;
+    if(sid===d.id || tid===d.id){ connectedIds.add(sid); connectedIds.add(tid); connectedEdgeIds.add(l.id); }
+  });
+  nodeG.classed('dim', n => !connectedIds.has(n.id)).classed('hl', n => n.id===d.id);
+  edgeG.classed('dim', e => !connectedEdgeIds.has(e.id)).classed('hl', e => connectedEdgeIds.has(e.id));
+  edgePath.attr('marker-start', e=>{
+    const s = REL_STYLE[e.relationship_type];
+    if(!s || !s.markerStart) return null;
+    return connectedEdgeIds.has(e.id) ? `url(#${s.markerStart}-hl)` : `url(#${s.markerStart})`;
+  }).attr('marker-end', e=>{
+    const s = REL_STYLE[e.relationship_type];
+    if(!s || !s.markerEnd) return null;
+    return connectedEdgeIds.has(e.id) ? `url(#${s.markerEnd}-hl)` : `url(#${s.markerEnd})`;
+  });
+
+  openInspector(d);
+}
+
+function openInspector(d){
+  const insp = d3.select('#inspector');
+  d3.select('#insType').text(d.type).style('color', typeColor[d.type]||'#5c85b8').style('border-color', typeColor[d.type]||'#5c85b8');
+  d3.select('#insTitle').text(d.label);
+  const body = d3.select('#insBody').html('');
+
+  if(d.attributes && d.attributes.length){
+    body.append('div').attr('class','section-lbl').text('Atributos');
+    const ul = body.append('ul');
+    d.attributes.forEach(a => ul.append('li').text(a));
+  }
+
+  const outgoing = links.filter(l => (l.source.id||l.source) === d.id);
+  const incoming = links.filter(l => (l.target.id||l.target) === d.id);
+
+  if(outgoing.length){
+    body.append('div').attr('class','section-lbl').text('Relações de saída');
+    outgoing.forEach(l=>{
+      const tid = l.target.id||l.target;
+      const row = body.append('div').attr('class','rel-row');
+      row.append('div').attr('class','rt').text(l.relationship_type + (l.label? '  ·  '+l.label : ''));
+      row.append('div').attr('class','rn').html(`→ <b data-jump="${tid}">${nodeById.get(tid)?.label||tid}</b>`);
+    });
+  }
+  if(incoming.length){
+    body.append('div').attr('class','section-lbl').text('Relações de entrada');
+    incoming.forEach(l=>{
+      const sid = l.source.id||l.source;
+      const row = body.append('div').attr('class','rel-row');
+      row.append('div').attr('class','rt').text(l.relationship_type + (l.label? '  ·  '+l.label : ''));
+      row.append('div').attr('class','rn').html(`← <b data-jump="${sid}">${nodeById.get(sid)?.label||sid}</b>`);
+    });
+  }
+
+  body.selectAll('b[data-jump]').on('click', function(){
+    const id = this.getAttribute('data-jump');
+    const target = nodes.find(n=>n.id===id);
+    if(target) selectNode(target);
+  });
+
+  insp.classed('open', true);
+}
+function closeInspector(){ d3.select('#inspector').classed('open', false); }
+d3.select('#insClose').on('click', (e)=>{ e.stopPropagation(); closeInspector(); clearHighlight(); });
+
+/* ============================== SEARCH ============================== */
+d3.select('#searchInput').on('input', function(){
+  const q = this.value.trim().toLowerCase();
+  if(!q){ clearHighlight(); return; }
+  const matches = new Set(nodes.filter(n => n.label.toLowerCase().includes(q) || n.id.toLowerCase().includes(q)).map(n=>n.id));
+  nodeG.classed('dim', n => !matches.has(n.id)).classed('hl', n => matches.has(n.id));
+  edgeG.classed('dim', true).classed('hl', false);
+});
+
+/* ============================== STAMP (drawing title block) ============================== */
+d3.select('#stamp').html(`
+  <div class="k">Nós</div><div class="v">${nodes.length}</div>
+  <div class="k">Relações</div><div class="v">${links.length}</div>
+  <div class="k">Notação</div><div class="v">UML</div>
+`);
+
+/* settle layout a bit before releasing fixed centers */
+simulation.alpha(1).restart();
+</script>
+</body>
+</html>
